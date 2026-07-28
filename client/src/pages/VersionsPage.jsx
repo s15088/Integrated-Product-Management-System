@@ -512,10 +512,9 @@ const VersionsPage = () => {
             label="版本号"
             rules={[
               { required: true, message: '请输入版本号' },
-              { pattern: /^v\d+\.\d+\.\d+$/, message: '版本号格式需为 vX.Y.Z，如 v1.0.0' },
             ]}
           >
-            <Input placeholder="v1.0.0" />
+            <Input placeholder="例如 v1.0.0 或 1.0.0" />
           </Form.Item>
           <Form.Item
             name="version_name"

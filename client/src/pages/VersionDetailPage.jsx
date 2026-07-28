@@ -96,9 +96,17 @@ const VersionDetailPage = () => {
     setError(null);
     try {
       const res = await axios.get(`/api/versions/${id}`);
-      // Fix 1: use const body = res.data; instead of body?.data || body
       const body = res.data;
-      setVersion(body);
+      // Backend returns { version, items, changeRequests, mergeRate, burndown, stats }
+      // Merge version object fields into the top level so all accessors work correctly
+      setVersion({
+        ...body.version,
+        items: body.items,
+        changeRequests: body.changeRequests,
+        mergeRate: body.mergeRate,
+        burndown: body.burndown,
+        stats: body.stats,
+      });
     } catch (err) {
       const msg = err?.response?.data?.message || err.message || '获取版本详情失败';
       setError(msg);
@@ -114,7 +122,6 @@ const VersionDetailPage = () => {
 
   // ========== derived data ==========
 
-  // Fix 2: Backend returns { version, items: { requirements: { items: [] }, issues: { items: [] } }, ... }
   // Combine items.requirements.items and items.issues.items into one array.
   const versionItems = useMemo(() => {
     const reqItems = version?.items?.requirements?.items || [];
@@ -122,10 +129,8 @@ const VersionDetailPage = () => {
     return [...reqItems, ...issueItems];
   }, [version]);
 
-  // Fix 3: use version.changeRequests instead of version.change_requests
   const changeRequests = useMemo(() => version?.changeRequests || [], [version]);
 
-  // Fix 12: item_type uses 'requirement' and 'issue' (not '需求' and '问题单')
   const requirementItems = useMemo(
     () => versionItems.filter((item) => item.item_type === 'requirement'),
     [versionItems]
@@ -146,7 +151,6 @@ const VersionDetailPage = () => {
     return Math.round((mergedCount / versionItems.length) * 100);
   }, [mergedCount, versionItems.length]);
 
-  // Fix 4: use version.burndown instead of version.burndown_data
   const burndownData = useMemo(() => {
     const data = version?.burndown || [];
     return data.map((point) => ({
@@ -354,11 +358,6 @@ const VersionDetailPage = () => {
     </Row>
   );
 
-  // Fix 10: version_item table only has version_item_id, version_id, item_type, item_id,
-  // merge_status, source_branch, merged_at, operator.
-  // The title, module, priority, etc. are NOT in version_item.
-  // For display, use item_id as item_no, and add a note that details can be viewed by navigating to the detail page.
-
   // ---------- Tab 2: 已合入需求 ----------
   const renderRequirementsTab = () => {
     if (requirementItems.length === 0) {
@@ -389,7 +388,6 @@ const VersionDetailPage = () => {
             type="link"
             size="small"
             onClick={() => {
-              // Fix 12: item_type is 'requirement' or 'issue'
               if (record.item_type === 'requirement') {
                 navigate(`/requirements/${record.item_id}`);
               }
@@ -407,7 +405,6 @@ const VersionDetailPage = () => {
           注：该表仅展示版本合入项的基本信息，详细字段（标题、模块、优先级等）请通过「反查详情」跳转至对应详情页查看。
         </Text>
         <Table
-          // Fix 9: use r.version_item_id || r.item_id instead of r.id || r.item_id
           rowKey={(r) => r.version_item_id || r.item_id}
           columns={columns}
           dataSource={requirementItems}
@@ -449,7 +446,6 @@ const VersionDetailPage = () => {
             type="link"
             size="small"
             onClick={() => {
-              // Fix 12: item_type is 'issue'
               if (record.item_type === 'issue') {
                 navigate(`/issues/${record.item_id}`);
               }
@@ -467,7 +463,6 @@ const VersionDetailPage = () => {
           注：该表仅展示版本合入项的基本信息，详细字段（标题、严重度、优先级等）请通过「详情」跳转至对应详情页查看。
         </Text>
         <Table
-          // Fix 9: use r.version_item_id || r.item_id instead of r.id || r.item_id
           rowKey={(r) => r.version_item_id || r.item_id}
           columns={columns}
           dataSource={issueItems}
@@ -497,9 +492,7 @@ const VersionDetailPage = () => {
         </Descriptions.Item>
         <Descriptions.Item label="基线时间">{version.baseline_time || '-'}</Descriptions.Item>
         <Descriptions.Item label="计划发布日期">{version.planned_release_date || '-'}</Descriptions.Item>
-        {/* Fix 5: use version.release_date instead of version.actual_release_date */}
         <Descriptions.Item label="实际发布日期">{version.release_date || '-'}</Descriptions.Item>
-        {/* Fix 11: use version.requirement_count / version.issue_count from the version object directly */}
         <Descriptions.Item label="合入需求数">{version.requirement_count || 0}</Descriptions.Item>
         <Descriptions.Item label="合入问题单数">{version.issue_count || 0}</Descriptions.Item>
         <Descriptions.Item label="创建时间">{version.created_at || '-'}</Descriptions.Item>
@@ -530,7 +523,7 @@ const VersionDetailPage = () => {
           return <Tag color={colorMap[text] || 'default'}>{text || '-'}</Tag>;
         },
       },
-      { title: '申请人', dataIndex: 'applicant_name', key: 'applicant_name', width: 100, render: (t) => t || '-' },
+      { title: '申请人', dataIndex: 'applicant', key: 'applicant', width: 100, render: (t) => (t?.name || t || '-') },
       {
         title: '原因',
         dataIndex: 'reason',
@@ -544,19 +537,17 @@ const VersionDetailPage = () => {
         key: 'status',
         width: 90,
         render: (text) => {
-          // Fix 8: backend uses '审批中' not '待审批'
           const colorMap = { '审批中': 'orange', '已通过': 'green', '已驳回': 'red' };
           return <Tag color={colorMap[text] || 'default'}>{text || '-'}</Tag>;
         },
       },
-      { title: '审批人', dataIndex: 'approver_name', key: 'approver_name', width: 100, render: (t) => t || '-' },
+      { title: '审批人', dataIndex: 'approver', key: 'approver', width: 100, render: (t) => (t?.name || t || '-') },
       { title: '时间', dataIndex: 'created_at', key: 'created_at', width: 130, render: (t) => t || '-' },
       {
         title: '操作',
         key: 'actions',
         width: 180,
         render: (_, record) => {
-          // Fix 8: backend uses '审批中' not '待审批'
           if (record.status !== '审批中') return null;
           return (
             <Space size="small">
@@ -565,7 +556,6 @@ const VersionDetailPage = () => {
                 size="small"
                 icon={<CheckOutlined />}
                 loading={crApproveLoading}
-                // Fix 6: use record.change_request_id instead of record.id
                 onClick={() => handleCRApprove(record.change_request_id, 'approve')}
               >
                 审批通过
@@ -576,7 +566,6 @@ const VersionDetailPage = () => {
                 size="small"
                 icon={<CloseOutlined />}
                 loading={crApproveLoading}
-                // Fix 6: use record.change_request_id instead of record.id
                 onClick={() => handleCRApprove(record.change_request_id, 'reject')}
               >
                 驳回
@@ -589,7 +578,6 @@ const VersionDetailPage = () => {
 
     return (
       <Table
-        // Fix 6: use change_request_id as rowKey
         rowKey="change_request_id"
         columns={columns}
         dataSource={changeRequests}
