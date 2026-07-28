@@ -5,7 +5,7 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
-import './api/client';
+import './api/client'; // Register global axios interceptors (token + 401)
 import './index.css';
 
 const theme = {

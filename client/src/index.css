@@ -18,6 +18,7 @@ body {
   min-height: 100vh;
 }
 
+/* Ant Design overrides */
 .ant-layout-header {
   padding: 0 24px !important;
   position: sticky;
@@ -36,6 +37,7 @@ body {
   margin-bottom: 16px;
 }
 
+/* Custom */
 .stat-card {
   text-align: center;
 }
@@ -49,21 +51,25 @@ body {
   font-weight: 600;
 }
 
+/* Tag colors */
 .status-tag {
   min-width: 60px;
   text-align: center;
 }
 
+/* Priority colors */
 .tag-p0, .tag-紧急 { background: #ff4d4f; color: white; }
 .tag-p1, .tag-高 { background: #fa8c16; color: white; }
 .tag-p2, .tag-中 { background: #faad14; color: white; }
 .tag-p3, .tag-低 { background: #52c41a; color: white; }
 
+/* Severity colors */
 .severity-致命 { background: #ff4d4f; color: white; }
 .severity-严重 { background: #fa8c16; color: white; }
 .severity-一般 { background: #faad14; color: white; }
 .severity-提示 { background: #1677ff; color: white; }
 
+/* Status colors */
 .status-规划中 { background: #1677ff; color: white; }
 .status-开发中 { background: #2f54eb; color: white; }
 .status-已发布 { background: #52c41a; color: white; }

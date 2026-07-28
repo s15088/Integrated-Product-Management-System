@@ -33,8 +33,10 @@ export function AuthProvider({ children }) {
 
   const hasPermission = (permissionKey) => {
     if (!user) return false;
+    // Admin has all permissions
     if (user.role === '系统管理员') return true;
-    return true;
+    // We'll check against the permissions loaded from API
+    return true; // For now, backend handles enforcement
   };
 
   return (
