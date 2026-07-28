@@ -12,6 +12,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -83,6 +84,28 @@ function AppLayout() {
           {
             key: '/system/audit',
             label: '审计日志',
+          },
+          {
+            key: '/system/archive',
+            label: '数据归档',
+          },
+        ],
+      });
+    }
+
+    if (user?.role === '产品经理') {
+      items.push({
+        key: 'system-group',
+        icon: <DatabaseOutlined />,
+        label: '系统工具',
+        children: [
+          {
+            key: '/system/audit',
+            label: '审计日志',
+          },
+          {
+            key: '/system/archive',
+            label: '数据归档',
           },
         ],
       });

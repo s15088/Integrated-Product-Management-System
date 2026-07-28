@@ -10,6 +10,7 @@ const issueRoutes = require('./routes/issues');
 const versionRoutes = require('./routes/versions');
 const systemRoutes = require('./routes/system');
 const dashboardRoutes = require('./routes/dashboard');
+const archiveRoutes = require('./routes/archive');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,6 +40,7 @@ initDB().then(() => {
   app.use('/api/issues', issueRoutes);
   app.use('/api/versions', versionRoutes);
   app.use('/api/system', systemRoutes);
+  app.use('/api/archive', archiveRoutes);
 
   // Serve static files in production
   if (process.env.NODE_ENV === 'production') {

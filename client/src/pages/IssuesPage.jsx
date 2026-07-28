@@ -27,6 +27,7 @@ import {
   SearchOutlined,
   ReloadOutlined,
   ExclamationCircleOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -750,6 +751,17 @@ const IssuesPage = () => {
         <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
           支持 .xlsx / .xls 格式，请按模板格式上传
         </Text>
+        <div style={{ marginTop: 12, textAlign: 'right' }}>
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            onClick={() => {
+              window.open('/api/issues/import/template', '_blank');
+            }}
+          >
+            下载导入模板
+          </Button>
+        </div>
       </Modal>
 
       {/* ---------- 合入版本 Modal ---------- */}

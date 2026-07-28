@@ -38,6 +38,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   WarningOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -1087,6 +1088,17 @@ const RequirementsPage = () => {
               description="请上传 Excel 文件（.xlsx 或 .xls），文件大小不超过 10MB。第一行应为表头，包含标题、产品、模块、来源、优先级、提出人、期望日期、描述等列。"
               style={{ marginBottom: 16 }}
             />
+            <div style={{ marginBottom: 12, textAlign: 'right' }}>
+              <Button
+                type="link"
+                icon={<DownloadOutlined />}
+                onClick={() => {
+                  window.open('/api/requirements/import/template', '_blank');
+                }}
+              >
+                下载导入模板
+              </Button>
+            </div>
             <Dragger
               accept=".xlsx,.xls"
               maxCount={1}

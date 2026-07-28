@@ -18,6 +18,7 @@ const VersionDetailPage = lazy(() => import('./pages/VersionDetailPage'));
 const UsersPage = lazy(() => import('./pages/UsersPage'));
 const PermissionsPage = lazy(() => import('./pages/PermissionsPage'));
 const AuditLogsPage = lazy(() => import('./pages/AuditLogsPage'));
+const ArchivePage = lazy(() => import('./pages/ArchivePage'));
 
 const LoadingFallback = () => (
   <div
@@ -160,6 +161,14 @@ function App() {
           element={
             <Suspense fallback={<LoadingFallback />}>
               <AuditLogsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/system/archive"
+          element={
+            <Suspense fallback={<LoadingFallback />}>
+              <ArchivePage />
             </Suspense>
           }
         />

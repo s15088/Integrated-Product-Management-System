@@ -11,6 +11,45 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.use(authMiddleware);
 
 // ============================================================
+// GET /api/requirements/import/template - Download import template
+// ============================================================
+router.get('/import/template', (req, res) => {
+  try {
+    const templateData = [
+      {
+        '标题': '用户登录功能优化',
+        '产品ID': 'prod-001',
+        '优先级': '高',
+        '提出人': 'user-001',
+        '模块': '登录模块',
+        '来源': '客户反馈',
+        '期望日期': '2024-12-31',
+        '描述': '优化用户登录流程，支持多种登录方式，提升用户体验',
+      },
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '需求导入模板');
+
+    worksheet['!cols'] = [
+      { wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 15 },
+      { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 50 },
+    ];
+
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    const filename = '需求导入模板.xlsx';
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+    res.send(buffer);
+  } catch (err) {
+    console.error('Download requirement template error:', err);
+    res.status(500).json({ error: '下载模板失败: ' + err.message });
+  }
+});
+
+// ============================================================
 // Helper: generate requirement code
 // ============================================================
 function generateRequirementCode() {

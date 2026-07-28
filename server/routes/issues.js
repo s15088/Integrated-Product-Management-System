@@ -11,6 +11,50 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.use(authMiddleware);
 
 // ============================================================
+// GET /api/issues/import/template - Download import template
+// ============================================================
+router.get('/import/template', (req, res) => {
+  try {
+    const templateData = [
+      {
+        '标题': '登录页面加载缓慢',
+        '产品ID': 'prod-001',
+        '类型': '缺陷',
+        '严重程度': '一般',
+        '优先级': '中',
+        '报告人': 'user-001',
+        '处理人': 'user-002',
+        '发现版本': 'v1.0.0',
+        '模块': '登录模块',
+        '复现步骤': '1. 打开登录页\n2. 输入账号密码\n3. 点击登录',
+        '描述': '登录页面加载时间超过5秒，影响用户体验',
+      },
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '问题单导入模板');
+
+    // Add column widths
+    worksheet['!cols'] = [
+      { wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 12 },
+      { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+      { wch: 15 }, { wch: 40 }, { wch: 50 },
+    ];
+
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    const filename = '问题单导入模板.xlsx';
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+    res.send(buffer);
+  } catch (err) {
+    console.error('Download issue template error:', err);
+    res.status(500).json({ error: '下载模板失败: ' + err.message });
+  }
+});
+
+// ============================================================
 // Helper: generate issue code (ISS-YYYY-XXXXX)
 // ============================================================
 function generateIssueCode() {
