@@ -96,9 +96,17 @@ const VersionDetailPage = () => {
     setError(null);
     try {
       const res = await axios.get(`/api/versions/${id}`);
-      // Fix 1: use const body = res.data; instead of body?.data || body
       const body = res.data;
-      setVersion(body);
+      // Backend returns { version, items, changeRequests, mergeRate, burndown, stats }
+      // Merge version object fields into the top level so all accessors work correctly
+      setVersion({
+        ...body.version,
+        items: body.items,
+        changeRequests: body.changeRequests,
+        mergeRate: body.mergeRate,
+        burndown: body.burndown,
+        stats: body.stats,
+      });
     } catch (err) {
       const msg = err?.response?.data?.message || err.message || '获取版本详情失败';
       setError(msg);
@@ -530,7 +538,7 @@ const VersionDetailPage = () => {
           return <Tag color={colorMap[text] || 'default'}>{text || '-'}</Tag>;
         },
       },
-      { title: '申请人', dataIndex: 'applicant_name', key: 'applicant_name', width: 100, render: (t) => t || '-' },
+      { title: '申请人', dataIndex: 'applicant', key: 'applicant', width: 100, render: (t) => (t?.name || t || '-') },
       {
         title: '原因',
         dataIndex: 'reason',
@@ -544,12 +552,11 @@ const VersionDetailPage = () => {
         key: 'status',
         width: 90,
         render: (text) => {
-          // Fix 8: backend uses '审批中' not '待审批'
           const colorMap = { '审批中': 'orange', '已通过': 'green', '已驳回': 'red' };
           return <Tag color={colorMap[text] || 'default'}>{text || '-'}</Tag>;
         },
       },
-      { title: '审批人', dataIndex: 'approver_name', key: 'approver_name', width: 100, render: (t) => t || '-' },
+      { title: '审批人', dataIndex: 'approver', key: 'approver', width: 100, render: (t) => (t?.name || t || '-') },
       { title: '时间', dataIndex: 'created_at', key: 'created_at', width: 130, render: (t) => t || '-' },
       {
         title: '操作',

@@ -22,6 +22,15 @@ app.use(express.urlencoded({ extended: true }));
 // Initialize database and start server
 initDB().then(() => {
 
+  // Root path - friendly API info (avoids 404 confusion in dev mode)
+  app.get('/', (req, res) => {
+    res.json({
+      message: '综合产品管理系统 API 服务运行中',
+      frontend: 'http://localhost:5173',
+      docs: '请访问前端地址进行使用，API 文档请参阅项目 README.md',
+    });
+  });
+
   // API Routes
   app.use('/api/auth', authRoutes);
   app.use('/api/dashboard', dashboardRoutes);
