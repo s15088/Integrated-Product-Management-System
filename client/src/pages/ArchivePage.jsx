@@ -18,6 +18,9 @@ import {
   message,
   Spin,
   List,
+  Divider,
+} from 'antd';
+import {
   InboxOutlined,
   CloudDownloadOutlined,
   CloudUploadOutlined,
@@ -25,9 +28,7 @@ import {
   CheckCircleOutlined,
   WarningOutlined,
   InfoCircleOutlined,
-  ArrowRightOutlined,
-} from 'antd';
-import { InboxOutlined as DraggerIcon } from '@ant-design/icons';
+} from '@ant-design/icons';
 import axios from 'axios';
 
 const { Title, Text, Paragraph } = Typography;
